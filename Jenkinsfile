@@ -46,13 +46,16 @@ pipeline{
                 steps {
                     sshagent(credentials: ['ec2-deployment-ssh']) {
                         sh '''
-                            ssh -o StrictHostKeyChecking=yes ubuntu@54.234.233.129 \
-                                "FILE=deployment-${BUILD_NUMBER}.zip sudo -E /opt/cloud/deploy.sh"
+                            scp -o StrictHostKeyChecking=yes \
+                                deploy.sh ubuntu@54.234.233.129:/tmp/deploy.sh
+
+                            ssh -o StrictHostKeyChecking=yes \
+                                ubuntu@54.234.233.129 \
+                                "bash /tmp/deploy.sh deployment-${BUILD_NUMBER}.zip"
                         '''
                     }
                 }
-            }       
-
+            }     
         }
 
     }
